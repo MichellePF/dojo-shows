@@ -1,7 +1,6 @@
 <template>
 	<div id="main-container">
 		<div class="wrap">
-			<h3>TV SHOWS</h3>
 			<table>
 				<thead>
 					<tr>
@@ -14,40 +13,39 @@
 				</thead>
 				<tbody>
 					<tr v-for="show in shows" :key="show.id">
-						<td>{{ show.title }}</td>
+						<td><router-link :to="{path: '/data/' + show.id}">{{ show.title }}</router-link></td>
 						<td>{{ show.network }}</td>
 						<td>{{ show.numberOfSeasons }}</td>
 						<td>{{ show.isCurrent }}</td>
-						<td><span v-for="(genre, i) in show.genres" :key="i">{{ genre }}/ </span></td>
+						<td>{{show.genres.join(' / ')}}</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 
 		<div class="wrap">
-			<form action="">
-				<p>Nombre:</p>
-				<input type="text" class="field"> <br/>
+			<form @submit="newShow">
+				<p>Title</p>
+				<input required type="text" class="field" v-model="new_title"> <br/>
 
-				<p>Correo electrónico:</p>
-				<input type="text" class="field"> <br/>
+				<p>Network</p>
+				<input required type="text" class="field" v-model="new_network"> <br/>
 
-				<p>Asunto:</p>
-				<input type="text" class="field"> <br/>
+				<p>Number of seasons</p>
+				<input required type="text" class="field" v-model="new_numSeasons"> <br/>
 
-				<div class="wrap_check">
-					<label for="vehicle1"> I have a bike</label><br>
-					<input type="checkbox" class="check" name="vehicle1" value="Bike">
-				
-				</div>
-				<div class="wrap_check">
-					<label for="vehicle1"> I have a bike</label><br>
-					<input type="checkbox" class="check" name="vehicle1" value="Bike">
-				
-				</div>
+				<select class="field current" v-model="new_isCurrent" required>
+					<option value>Is Current?</option>
+					<option value="true">Yes</option>
+					<option value="false">No</option>
+				</select>
+
+				<p>Genres (separate by " , ")</p>
+				<input required type="text" class="field" v-model="new_genres"> <br/>
+
 
 				<p class="center-content">
-				<input type="submit" class="btn btn-green" value="Enviar Datos">
+				<input type="submit" class="btn btn-green" value="Send information">
 				</p>
 
 			</form>
@@ -62,31 +60,55 @@ export default {
 	name: "Shows",
 	data() {
 		return {
-			shows: []      
+			shows: [],
+			new_title: "",
+			new_network: "",
+			new_numSeasons: "",
+			new_isCurrent: "",
+			new_genres: []      
+		}
+	},
+	methods: {
+		newShow(ev){
+			ev.preventDefault();
+			db.collection("shows").add({
+				title: this.new_title,
+				network: this.new_network,
+				numberOfSeasons: parseInt(this.new_numSeasons),
+				isCurrent: this.new_isCurrent == "true" ? true : false,
+				genres: this.new_genres.split(", ")
+			});
+			this.new_title = "",
+			this.new_network = "",
+			this.new_numSeasons = "",
+			this.new_isCurrent = "",
+			this.new_genres = []
 		}
 	},
 	firestore() {          
 		return {
 			shows: db.collection('shows')
 		}
-	}
+	},
+	
 }
 </script>
 
 <style scoped>
 #main-container{
-	margin: 200px;
+	margin-top: 100px;
 	width: 100%;
 	display: flex;
 	align-items: center;
-	
+	justify-content: center;
 }
 
 table{
 	background-color: white;
-	text-align: left;
+	text-align: center;
 	border-collapse: collapse;
-	width: 100%;
+	width: 80%;
+	margin: 30px;
 }
 
 th, td{
@@ -110,7 +132,7 @@ tr:hover td{
 
 form{
 	background-color: white;
-	border-radius: 3px;
+	border: 3px solid  #18A383;
 	color: #999;
 	font-size: 0.8em;
 	padding: 20px;
@@ -124,6 +146,12 @@ input{
 	width: 280px;
 }
 
+.current {
+	margin-top: 15px;
+	border: 0;
+	outline: none;
+	width: 300px;
+}
 
 .field{
 	border: solid 1px #ccc;
@@ -152,7 +180,7 @@ input{
 	background-color: #0F362D;
 }
 .btn-green:hover{
-	background-color: #37B839;	
+	background-color:  #18A383;	
 }
 .btn-green:active{
 	background-color: #29962A;

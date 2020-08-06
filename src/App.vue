@@ -1,17 +1,14 @@
 <template>
   <div id="app">
-    <Shows/>
+    <h1>TV SHOWS</h1>
+    <router-view/>
   </div>
 </template>
 
 <script>
-import Shows from './components/Shows.vue'
 
 export default {
-  name: 'App',
-  components: {
-    Shows
-  }
+  name: 'App'
 }
 </script>
 
