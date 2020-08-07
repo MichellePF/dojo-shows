@@ -9,6 +9,8 @@
 						<th>Number of seasons</th>
 						<th>Is current</th>
 						<th>genres</th>
+						<th>Actions</th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -18,6 +20,8 @@
 						<td>{{ show.numberOfSeasons }}</td>
 						<td>{{ show.isCurrent }}</td>
 						<td>{{show.genres.join(' / ')}}</td>
+						<td><router-link :to="{path: '/data/' + show.id + '/edit'}">Edit</router-link></td>
+						<td><a href="#" @click.prevent="delete_show(show.id)">X</a></td>
 					</tr>
 				</tbody>
 			</table>
@@ -83,7 +87,13 @@ export default {
 			this.new_numSeasons = "",
 			this.new_isCurrent = "",
 			this.new_genres = []
-		}
+		},
+		delete_show(id_show){
+			const sure = confirm('¿Seguro de borrar el elemento?');
+			if(!sure){return;}
+			db.collection("shows").doc(id_show).delete();
+		},
+		
 	},
 	firestore() {          
 		return {
@@ -103,6 +113,9 @@ export default {
 	justify-content: center;
 }
 
+a {
+	text-decoration: none;
+}
 table{
 	background-color: white;
 	text-align: center;
